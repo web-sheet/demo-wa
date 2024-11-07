@@ -17,7 +17,7 @@ const io = new Server(server, {
     transports: ['websocket', 'polling'] // Ensure both transports are available
 });
 
-const PORT = process.env.PORT || 3000; // Use Heroku's port or default to 3000
+const PORT = process.env.PORT || 8000; // Use Heroku's port or default to 3000
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
