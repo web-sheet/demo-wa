@@ -4,8 +4,7 @@
   "main": "main.js",
   "type": "module",
   "scripts": {
-        "start": "node .",
-        "starts": "pm2 start main.js",
+        "start": "pm2 start main.js",
         "stop": "pm2 stop main.js"
   },
   "keywords": [],
