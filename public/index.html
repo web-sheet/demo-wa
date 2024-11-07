@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp QR Code</title>
+    <link rel="icon" href="waicon.png" type="image/x-icon"> <!-- Favicon Link -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        socket.on('qr', (qr) => {
+            const qrCodeContainer = document.getElementById('qrcode');
+            qrCodeContainer.innerHTML = ''; // Clear previous QR code
+            const img = document.createElement('img');
+            img.src = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qr)}&size=200x200`;
+            qrCodeContainer.appendChild(img);
+        });
+    </script>
+</head>
+<body>
+    <h1>Scan the QR Code to Login</h1>
+    <div id="qrcode"></div>
+</body>
+</html>
