@@ -14,19 +14,16 @@ const io = new Server(server, {
         origin: "*",
         methods: ["GET", "POST"]
     },
-    transports: ['websocket', 'polling'] // Ensure both transports are available
+    transports: ['websocket', 'polling'] 
 });
 
-const PORT = process.env.PORT || 8000; // Use Heroku's port or default to 3000
+const PORT = process.env.PORT || 3000; 
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
 app.use(express.json());
 app.use(express.static('public')); 
-
-// Handle favicon requests
- 
 
 app.post('/sendMessage', async (req, res) => {
     const { number, message } = req.body;
@@ -46,34 +43,53 @@ app.get('/qr', (req, res) => {
 
 const client = new Client({ puppeteer: { headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] } });
 
+let isMessageListenerSet = false; // Flag to track listener setup
+
 client.on('ready', () => {
     console.log('Client is ready!');
+    if (!isMessageListenerSet) {
+        setupMessageListener(); // Set up message listeners only once
+        isMessageListenerSet = true; // Update the flag
+    }
 });
 
 client.on('qr', qr => {
     qrcode.generate(qr, { small: true });
-    io.emit('qr', qr); // Emit the QR code to the frontend
+    io.emit('qr', qr);  
 });
 
-// Handle incoming messages
-client.on('message_create', async (message) => {
-    if (message.from === client.info.wid._serialized) {
-        return; 
+client.on('authenticated', () => {
+    console.log('Client authenticated');
+    if (!isMessageListenerSet) {
+        setupMessageListener(); // Set up listeners only if not already set
+        isMessageListenerSet = true; // Update the flag
     }
-
-    const messageBody = message.body;
-    console.log(messageBody);
-
-    if (message.type === 'location') {
-        const { latitude, longitude } = message.location;
-        console.log(`Received location: Latitude: ${latitude}, Longitude: ${longitude}`);
-        await saveLocationToGoogleSheets(latitude, longitude);
-        return; 
-    }
-
-    await saveMessageToGoogleSheets(messageBody);
-    await handleResponse(message);
 });
+
+client.on('auth_failure', () => {
+    console.error('Authentication failed, please check your QR code and try again.');
+});
+
+function setupMessageListener() {
+    client.on('message_create', async (message) => {
+        if (message.from === client.info.wid._serialized) {
+            return; 
+        }
+
+        const messageBody = message.body;
+        console.log(messageBody);
+
+        if (message.type === 'location') {
+            const { latitude, longitude } = message.location;
+            console.log(`Received location: Latitude: ${latitude}, Longitude: ${longitude}`);
+            await saveLocationToGoogleSheets(latitude, longitude);
+            return; 
+        }
+
+        await saveMessageToGoogleSheets(messageBody);
+        await handleResponse(message);
+    });
+}
 
 async function saveLocationToGoogleSheets(latitude, longitude) {
     try {
@@ -126,4 +142,5 @@ async function sendMessageToNumber(number, message) {
     }
 }
 
+// Initialize the client
 client.initialize();
