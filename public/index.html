@@ -5,21 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WhatsApp QR Code</title>
     <link rel="icon" href="waicon.png" type="image/x-icon"> <!-- Favicon Link -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet"> <!-- Google Font -->
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
 
         socket.on('qr', (qr) => {
             const qrCodeContainer = document.getElementById('qrcode');
+            const loadingSpinner = document.getElementById('loading');
+            loadingSpinner.style.display = 'none'; // Hide loading spinner
             qrCodeContainer.innerHTML = ''; // Clear previous QR code
             const img = document.createElement('img');
             img.src = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qr)}&size=200x200`;
+            img.classList.add('img-fluid'); // Make the image responsive
             qrCodeContainer.appendChild(img);
         });
     </script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: row;
+            height: 100vh;
+            background-color: #e9ecef; /* Light gray background */
+            font-family: 'Roboto', sans-serif; /* Apply Google Font */
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #25D366; /* WhatsApp green */
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start; /* Align items to the start */
+        }
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: white; /* Main content area */
+            padding: 20px;
+        }
+        h1 {
+            margin-bottom: 20px; /* Space below the header */
+        }
+        #loading {
+            margin-top: 20px; /* Space below the header */
+        }
+        #qrcode {
+            margin-top: 20px; /* Space between loading and QR code */
+        }
+        .explanation {
+            margin-top: 20px; /* Space above explanation text */
+            text-align: center; /* Center the explanation text */
+            font-size: 16px; /* Font size for explanation */
+            color: #333; /* Darker text color for contrast */
+            
+        }
+    </style>
 </head>
 <body>
-    <h1>Scan the QR Code to Login</h1>
-    <div id="qrcode"></div>
+    <div class="sidebar">
+        <h2>WhatsApp</h2>
+        <p>Scan the QR Code to Login</p>
+        <p>Created by Websheet-web</p>  
+        <p style="font-size: 14px;">Credit to Whatsap-web.js</p>
+    </div>
+    <div class="main-content">
+        <div style="height: 400px;">       
+        <div id="loading" class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <div id="qrcode" class="text-center" style="height: 100px;"></div>
+             </div>
+        <div class="explanation">
+            <p>Mohon tunggu hinga QR Code muncul. Reload halaman jika QR code tidak muncul lebih dari 30 detik.</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
