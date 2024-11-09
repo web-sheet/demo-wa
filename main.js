@@ -46,11 +46,6 @@ const client = new Client(
     { puppeteer: { headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] } });
 
 
-client.on('disconnected', (reason) => {
-    // Destroy and reinitialize the client when disconnected
-    whatsapp.destroy();
-    whatsapp.initialize();
-  });
 let isMessageListenerSet = false; // Flag to track listener setup
 
 client.on('ready', () => {
@@ -152,3 +147,9 @@ async function sendMessageToNumber(number, message) {
 
 // Initialize the client
 client.initialize();
+
+client.on('disconnected', (reason) => {
+    // Destroy and reinitialize the client when disconnected
+    whatsapp.destroy();
+    whatsapp.initialize();
+  });
