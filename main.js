@@ -133,8 +133,14 @@ async function handleResponse(message) {
     try {
         const response = await fetch('https://script.google.com/macros/s/AKfycbyFzI3fywUiQ11gzDuJAIdwU2VaofG9BYf4CS14-n_5jZcKEzqjr4jp_hZiObVRoHm1/exec?query=' + encodeURIComponent(msgBody));
         const data = await response.json();
-        const reply = data.response ? data.response.replace(/\\n/g, "\n") : null;
-        client.sendMessage(message.from, reply);
+        
+        // Check if the response is not empty
+        if (data.response) {
+            const reply = data.response.replace(/\\n/g, "\n");
+            client.sendMessage(message.from, reply);
+        }
+        // If data.response is empty, do not send any message
+
     } catch (error) {
         console.error('Error fetching response:', error);
         client.sendMessage(message.from, 'Sorry, I could not process your request.');
