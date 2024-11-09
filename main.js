@@ -160,10 +160,14 @@ client.on('disconnected', async (reason) => {
         io.emit('qr', qr);  
     });
 
-    // Optionally, you can also set up the message listener again
+    client.on('ready', () => {
+    console.log('Client is ready!');
     if (!isMessageListenerSet) {
-        setupMessageListener(); // Set up listeners again if not already set
+        setupMessageListener(); // Set up message listeners only once
         isMessageListenerSet = true; // Update the flag
     }
+    });
+
+
 });
 
