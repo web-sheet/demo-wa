@@ -84,11 +84,11 @@ client.on('message_create', async (message) => {
     }
 
       
-       if(message.type === 'isStatus' {
+       if(message.type === 'isStatus') {
         return;
        } 
 
-    // Check if the message type is 'chat' to filter out status updates
+   
     if (message.type === 'chat') {
        const messageBody = message.body;
         await saveMessageToGoogleSheets(messageBody);
