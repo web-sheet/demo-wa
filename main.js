@@ -77,45 +77,7 @@ client.on('ready', () => {
 // });
 
 function setupMessageListener() {
-client.on('message_create', async (message) => {
-    // Ignore messages sent by the client itself
-    if (message.from === client.info.wid._serialized) {
-        return; 
-    }
-
-      
-       if(message.type === 'isStatus') {
-        return;
-       } 
-
-   
-    if (message.type === 'chat') {
-       const messageBody = message.body;
-        await saveMessageToGoogleSheets(messageBody);
-              
-        return; 
-    }
-
-
-
-    // Handle location messages separately
-    if (message.type === 'location') {
-        const { latitude, longitude } = message.location;
-        console.log(`Received location: Latitude: ${latitude}, Longitude: ${longitude}`);
-        await saveLocationToGoogleSheets(latitude, longitude);
-        return; 
-    }
-
-  
-    await handleResponse(message);
-});client.on('qr', qr => {
-    // Generate QR code and send it to the frontend
-    qrcode.generate(qr, { small: true });
-    // Emit the QR code to the frontend
-    io.emit('qr', qr); // Using Socket.IO to send QR code to the client
-});
-
-// Handle incoming messages
+    // Handle incoming messages
 client.on('message_create', async (message) => {
             if (message.from === client.info.wid._serialized) {
                 return; 
@@ -135,7 +97,17 @@ client.on('message_create', async (message) => {
             await saveMessageToGoogleSheets(messageBody);
             await handleResponse(message);
         });
+
 }
+    
+    client.on('qr', qr => {
+    // Generate QR code and send it to the frontend
+    qrcode.generate(qr, { small: true });
+    // Emit the QR code to the frontend
+    io.emit('qr', qr); // Using Socket.IO to send QR code to the client
+});
+
+
 
 async function saveLocationToGoogleSheets(latitude, longitude) {
     try {
