@@ -42,8 +42,9 @@ app.get('/qr', (req, res) => {
 });
 
 const client = new Client(
-      restartOnAuthFail: true, // related problem solution
-    { puppeteer: { headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] } });
+      
+    {restartOnAuthFail: true, 
+         puppeteer: { headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] } });
 
 
 let isMessageListenerSet = false; // Flag to track listener setup
@@ -149,7 +150,7 @@ async function sendMessageToNumber(number, message) {
 client.initialize();
 
 client.on('disconnected', (reason) => {
-    // Destroy and reinitialize the client when disconnected
+    
     whatsapp.destroy();
     whatsapp.initialize();
   });
