@@ -149,8 +149,21 @@ async function sendMessageToNumber(number, message) {
 // Initialize the client
 client.initialize();
 
-client.on('disconnected', (reason) => {
-    
-    whatsapp.destroy();
-    whatsapp.initialize();
-  });
+client.on('disconnected', async (reason) => {
+    console.log('Client was logged out:', reason);
+    await client.destroy(); // Properly destroy the client instance
+    await client.initialize(); // Re-initialize the client
+
+    // Re-establish the QR code listener
+    client.on('qr', qr => {
+        qrcode.generate(qr, { small: true });
+        io.emit('qr', qr);  
+    });
+
+    // Optionally, you can also set up the message listener again
+    if (!isMessageListenerSet) {
+        setupMessageListener(); // Set up listeners again if not already set
+        isMessageListenerSet = true; // Update the flag
+    }
+});
+
