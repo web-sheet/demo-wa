@@ -84,7 +84,7 @@ client.on('message_create', async (message) => {
     }
 
     // Check if the message type is 'chat' to filter out status updates
-    if (message.type !== 'chat') {
+    if (message.type === 'isStatus') {
         return; // Exit if it's not a chat message
     }
 
