@@ -83,25 +83,25 @@ client.on('message_create', async (message) => {
         return; 
     }
 
-    // Check if the message is new and not a status update
-    if (message.isNew && message.type !== 'status') {
-        const messageBody = message.body;
-        console.log(messageBody);
-
-        // Handle location messages separately
-        if (message.type === 'location') {
-            const { latitude, longitude } = message.location;
-            console.log(`Received location: Latitude: ${latitude}, Longitude: ${longitude}`);
-            await saveLocationToGoogleSheets(latitude, longitude);
-            return; 
-        }
-
-        // Save the new chat message to Google Sheets
-        await saveMessageToGoogleSheets(messageBody);
-        await handleResponse(message);
-    } else {
-        console.log('Ignored message: either not new or a status update.');
+    // Check if the message type is 'chat' to filter out status updates
+    if (message.type !== 'chat') {
+        return; // Exit if it's not a chat message
     }
+
+    const messageBody = message.body;
+    console.log(messageBody);
+
+    // Handle location messages separately
+    if (message.type === 'location') {
+        const { latitude, longitude } = message.location;
+        console.log(`Received location: Latitude: ${latitude}, Longitude: ${longitude}`);
+        await saveLocationToGoogleSheets(latitude, longitude);
+        return; 
+    }
+
+    // Save the chat message to Google Sheets
+    await saveMessageToGoogleSheets(messageBody);
+    await handleResponse(message);
 });
 }
 
