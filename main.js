@@ -133,7 +133,7 @@ async function handleResponse(message) {
     try {
         const response = await fetch('https://script.google.com/macros/s/AKfycbyFzI3fywUiQ11gzDuJAIdwU2VaofG9BYf4CS14-n_5jZcKEzqjr4jp_hZiObVRoHm1/exec?query=' + encodeURIComponent(msgBody));
         const data = await response.json();
-        const reply = data.response ? data.response.replace(/\\n/g, "\n") : 'Hello, how can I assist you?';
+        const reply = data.response ? data.response.replace(/\\n/g, "\n") : null;
         client.sendMessage(message.from, reply);
     } catch (error) {
         console.error('Error fetching response:', error);
