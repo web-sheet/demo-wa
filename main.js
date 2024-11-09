@@ -64,17 +64,17 @@ client.on('ready', () => {
     }
 });
 
-client.on('authenticated', () => {
-    console.log('Client authenticated');
-    if (!isMessageListenerSet) {
-        setupMessageListener(); // Set up listeners only if not already set
-        isMessageListenerSet = true; // Update the flag
-    }
-});
+// client.on('authenticated', () => {
+//     console.log('Client authenticated');
+//     if (!isMessageListenerSet) {
+//         setupMessageListener(); // Set up listeners only if not already set
+//         isMessageListenerSet = true; // Update the flag
+//     }
+// });
 
-client.on('auth_failure', () => {
-    console.error('Authentication failed, please check your QR code and try again.');
-});
+// client.on('auth_failure', () => {
+//     console.error('Authentication failed, please check your QR code and try again.');
+// });
 
 function setupMessageListener() {
 client.on('message_create', async (message) => {
