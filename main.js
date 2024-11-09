@@ -83,15 +83,17 @@ client.on('message_create', async (message) => {
         return; 
     }
 
-        const messageBody = message.body;
-       
+      
+       if(message.type === 'isStatus' {
+        return;
+       } 
 
     // Check if the message type is 'chat' to filter out status updates
     if (message.type === 'chat') {
-          // Save the chat message to Google Sheets
-    await saveMessageToGoogleSheets(messageBody);
-        
-        return; // Exit if it's not a chat message
+       const messageBody = message.body;
+        await saveMessageToGoogleSheets(messageBody);
+              
+        return; 
     }
 
 
