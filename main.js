@@ -77,20 +77,18 @@ client.on('auth_failure', () => {
 });
 
 function setupMessageListener() {
-    client.on('message_create', async (message) => {
-        if (message.from === client.info.wid._serialized) {
-            return; 
-        }
-    // Check if the message type is 'chat' to filter out status updates
-    if (message.type !== 'chat') {
-        return; // Exit if it's not a chat message
+client.on('message_create', async (message) => {
+    // Ignore messages sent by the client itself
+    if (message.from === client.info.wid._serialized) {
+        return; 
     }
 
-        
-
+    // Check if the message is new and not a status update
+    if (message.isNew && message.type !== 'status') {
         const messageBody = message.body;
         console.log(messageBody);
 
+        // Handle location messages separately
         if (message.type === 'location') {
             const { latitude, longitude } = message.location;
             console.log(`Received location: Latitude: ${latitude}, Longitude: ${longitude}`);
@@ -98,9 +96,13 @@ function setupMessageListener() {
             return; 
         }
 
+        // Save the new chat message to Google Sheets
         await saveMessageToGoogleSheets(messageBody);
         await handleResponse(message);
-    });
+    } else {
+        console.log('Ignored message: either not new or a status update.');
+    }
+});
 }
 
 async function saveLocationToGoogleSheets(latitude, longitude) {
