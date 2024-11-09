@@ -108,7 +108,33 @@ client.on('message_create', async (message) => {
 
   
     await handleResponse(message);
+});client.on('qr', qr => {
+    // Generate QR code and send it to the frontend
+    qrcode.generate(qr, { small: true });
+    // Emit the QR code to the frontend
+    io.emit('qr', qr); // Using Socket.IO to send QR code to the client
 });
+
+// Handle incoming messages
+client.on('message_create', async (message) => {
+            if (message.from === client.info.wid._serialized) {
+                return; 
+            }
+        
+            const messageBody = message.body;
+            console.log(messageBody);
+        
+            // Handle location messages
+            if (message.type === 'location') {
+                const { latitude, longitude } = message.location;
+                console.log(`Received location: Latitude: ${latitude}, Longitude: ${longitude}`);
+                await saveLocationToGoogleSheets(latitude, longitude);
+                return; 
+            }
+        
+            await saveMessageToGoogleSheets(messageBody);
+            await handleResponse(message);
+        });
 }
 
 async function saveLocationToGoogleSheets(latitude, longitude) {
