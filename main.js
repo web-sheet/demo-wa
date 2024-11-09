@@ -83,13 +83,18 @@ client.on('message_create', async (message) => {
         return; 
     }
 
+        const messageBody = message.body;
+       
+
     // Check if the message type is 'chat' to filter out status updates
-    if (message.type === 'isStatus') {
+    if (message.type === 'chat') {
+          // Save the chat message to Google Sheets
+    await saveMessageToGoogleSheets(messageBody);
+        
         return; // Exit if it's not a chat message
     }
 
-    const messageBody = message.body;
-    console.log(messageBody);
+
 
     // Handle location messages separately
     if (message.type === 'location') {
@@ -99,8 +104,7 @@ client.on('message_create', async (message) => {
         return; 
     }
 
-    // Save the chat message to Google Sheets
-    await saveMessageToGoogleSheets(messageBody);
+  
     await handleResponse(message);
 });
 }
