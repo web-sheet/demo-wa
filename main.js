@@ -59,34 +59,25 @@ let isMessageListenerSet = false; // Flag to track listener setup
 client.on('ready', () => {
     console.log('Client is ready!');
     if (!isMessageListenerSet) {
-        setupMessageListener(); // Set up message listeners only once
-        isMessageListenerSet = true; // Update the flag
+        setupMessageListener(); 
+        isMessageListenerSet = true; 
     }
 });
 
-// client.on('authenticated', () => {
-//     console.log('Client authenticated');
-//     if (!isMessageListenerSet) {
-//         setupMessageListener(); // Set up listeners only if not already set
-//         isMessageListenerSet = true; // Update the flag
-//     }
-// });
-
-// client.on('auth_failure', () => {
-//     console.error('Authentication failed, please check your QR code and try again.');
-// });
 
 function setupMessageListener() {
-    // Handle incoming messages
+  
 client.on('message_create', async (message) => {
             if (message.from === client.info.wid._serialized) {
                 return; 
             }
-        
+            const senderNumber = message.from;
+            console.log(`Message received from: ${senderNumber}`);
+
             const messageBody = message.body;
             console.log(messageBody);
         
-            // Handle location messages
+    
             if (message.type === 'location') {
                 const { latitude, longitude } = message.location;
                 console.log(`Received location: Latitude: ${latitude}, Longitude: ${longitude}`);
@@ -94,7 +85,7 @@ client.on('message_create', async (message) => {
                 return; 
             }
         
-            await saveMessageToGoogleSheets(messageBody);
+            await saveMessageToGoogleSheets(senderNumber, messageBody);
             await handleResponse(message);
         });
 
@@ -123,12 +114,12 @@ async function saveLocationToGoogleSheets(latitude, longitude) {
     }
 }
 
-async function saveMessageToGoogleSheets(messageBody) {
+async function saveMessageToGoogleSheets(senderNumber, messageBody,) {
     try {
         const response = await fetch('https://script.google.com/macros/s/AKfycbyFzI3fywUiQ11gzDuJAIdwU2VaofG9BYf4CS14-n_5jZcKEzqjr4jp_hZiObVRoHm1/exec', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: messageBody }),
+            body: JSON.stringify({sender: senderNumber, message: messageBody  }),
         });
         const data = await response.json();
         console.log('Message saved to Google Sheets:', data);
