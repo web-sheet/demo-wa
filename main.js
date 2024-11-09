@@ -81,6 +81,12 @@ function setupMessageListener() {
         if (message.from === client.info.wid._serialized) {
             return; 
         }
+    // Check if the message type is 'chat' to filter out status updates
+    if (message.type !== 'chat') {
+        return; // Exit if it's not a chat message
+    }
+
+        
 
         const messageBody = message.body;
         console.log(messageBody);
