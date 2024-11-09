@@ -41,8 +41,16 @@ app.get('/qr', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-const client = new Client({ puppeteer: { headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] } });
+const client = new Client(
+      restartOnAuthFail: true, // related problem solution
+    { puppeteer: { headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] } });
 
+
+client.on('disconnected', (reason) => {
+    // Destroy and reinitialize the client when disconnected
+    whatsapp.destroy();
+    whatsapp.initialize();
+  });
 let isMessageListenerSet = false; // Flag to track listener setup
 
 client.on('ready', () => {
