@@ -36,15 +36,22 @@ app.post('/sendMessage', async (req, res) => {
     }
 });
 
-// Endpoint to get QR code
-app.get('/qr', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
 
 const client = new Client(
       
     {restartOnAuthFail: true, 
          puppeteer: { headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] } });
+
+
+app.get('/qr', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+
+client.on('qr', qr => {
+    qrcode.generate(qr, { small: true });
+    io.emit('qr', qr);  
+});
 
 
 let isMessageListenerSet = false; // Flag to track listener setup
@@ -55,11 +62,6 @@ client.on('ready', () => {
         setupMessageListener(); // Set up message listeners only once
         isMessageListenerSet = true; // Update the flag
     }
-});
-
-client.on('qr', qr => {
-    qrcode.generate(qr, { small: true });
-    io.emit('qr', qr);  
 });
 
 client.on('authenticated', () => {
